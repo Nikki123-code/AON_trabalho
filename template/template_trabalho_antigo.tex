@@ -1,0 +1,654 @@
+\documentclass[12pt]{article}
+\usepackage[portuguese]{babel}
+
+
+\title{Teoria da aproximação: Introdução e Aplicações}
+\author{}
+\date{8 de Novembro de 2024} %
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\let\thedate\@date
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Interpolação polinomial}
+\cfoot{\thepage}
+\usepackage{indentfirst}
+%\raggedright  
+%\setlength{\parindent}{1cm}
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+\centering
+    \vspace*{0.2 cm}
+    \includegraphics[scale=1.25]{Images/NSSTUNL.jpg}\\[2.5cm]
+    \vspace*{2.5 cm}
+   
+\textsc{\Large Projetos em Matemática}\\[0.5 cm]
+ 
+\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+{ \huge \bfseries \thetitle}\\
+\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+
+\begin{minipage}{0.5\textwidth}
+\begin{flushleft} \normalsize
+\emph{Professora}\\
+Prof.ª Doutora Magda Rebelo\\
+
+\end{flushleft}
+\end{minipage}~
+\begin{minipage}{0.4\textwidth}
+           
+\begin{flushright} \normalsize
+ \emph{Alunos} \\
+             Afonso Ferreira, 72148\\
+             Ana Filipa Borges, 71054\\
+             André Silva, 70750\\
+             Frederico Costa, 71135\\
+             Júlia Girão, 71011
+\end{flushright}
+       
+\end{minipage}\\[2 cm]
+
+
+ 
+    \thedate
+   
+   
+   
+
+\end{titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introdução}
+\hspace*{0.3cm}
+
+
+\hspace{0.5cm}A teoria da aproximação é um tópico de grande relevância na área da matemática, tendo aplicações em diversas áreas científicas, desde a Física, Química, Engenharias ou até ciências da vida. O ramo da matemática que se dedica a desenvolver estas teorias é a análise numérica.
+
+\hspace{0.5cm}Este trabalho foi desenvolvido no âmbito da unidade curricular "Projetos de Matemática", sob a orientação da Professora Doutora Magda Rebelo. Pretende-se desenvolver um estudo e análise das técnicas de aproximação, tendo como foco a Interpolação de polinómios.
+
+\hspace{0.5cm}A interpolação de polinómios é um método numérico de bastante importância, uma vez que este nos permite "obter"  informação, através de um conjunto de dados limitado. As diferentes formas de interpolação polinomial variaram ao longo da história, desde a matriz de Vandermonde, a série de Taylor, o polinómio de Bernstein até ao polinómio de Lagrange. Este estudo irá debruçar-se sobre a matriz de Vandermonde e o polinómio de Lagrange.
+
+\hspace{0.5cm}Apesar dos diferentes métodos de aproximação serem bastante precisos, é preciso indicar que existe sempre um erro. Este erro pode assumir várias formas, como é óbvio tanto a matriz de Vandermonde quanto o polinómio de Lagrange tem o seu erro associado.
+
+\hspace{0.5cm}Por fim, vamos explorar fenómenos reais onde a interpolação de polinómios pode ser aplicada, com as suas diferentes vertentes para cada caso.
+
+\hspace{0.5cm}Este projeto foi desenvolvido não só com bases teóricas, mas também com a análise de casos reais e a implementação de algoritmos de computação em linguagem Python, que nos permitiram estudar e analisar casos específicos.
+
+
+ 
+\section{Interpolação polinomial}
+
+
+ \hspace{0.5cm}A interpolação polinomial é um procedimento matemático que nos permite calcular a expressão analítica de um polinómio que passe por um dado conjunto de pontos conhecido. Este método é especialmente útil quando queremos aproximar uma função não polinomial através de uma função polinomial.
+ 
+ \hspace{0.5cm}Existem diversas formas de calcular este polinómio, como mencionado anteriormente na secção da introdução.
+ 
+ \hspace{0.5cm}A matriz de Vandermonde e o polinómio interpolador de Lagrange são duas estratégias bastante eficazes, pois permitem-nos construir este tal polinómio de uma forma fácil e rápida. Estes métodos utilizam um conjunto de dados da forma:
+
+\[
+((x_1, f(x_1)), (x_2, f(x_2)), \dots, (x_n, f(x_n)))
+\]
+
+e possibilitam construir um polinómio de grau $\leq$ n - 1, onde n representa a nossa quantidade de pontos. Os valores $x_i$ são conhecidos como nodos e os valores $y_i$ como dados. É importante destacar que em qualquer conjunto de dados considerado, $x_i \neq x_j$, $i, j \in \{0, 1, ..., n \}$.
+
+
+   
+
+\subsection{Matriz de Vandermonde}
+   
+\hspace{0.5cm}A matriz de Vandermonde, em homenagem a Alexandre-Théophile Vandermonde, é uma matriz cujos elementos de cada linha estão dispostos em progressão geométrica, sendo frequentemente utilizada na resolução de problemas de interpolação.
+   
+\hspace{0.5cm}Desta forma, para determinar o polinómio de grau $\leq n - 1$ ($P_n(x) = a_0 + a_1x + a_2x^2 + ... + a_nx^n$) que passa nos pontos já conhecidos $(x_i, y_i)$, para $i \in \{0,1,2,...,n\}$, temos como incógnita os coeficientes $a_i$, tal que  $P_n(x_i) = y_i$, com $i \in \{0,1,2,...,n\}$.
+
+    Isto é, para o sistema de equações:
+   
+    \begin{equation}\label{sistema1}
+    \left\{
+        \begin{array}{l}
+        P_n(x_0) = y_0\\
+        P_n(x_1) = y_1\\
+        P_n(x_2) = y_2\\
+        \hspace{0.1cm} \vdots   \\
+        P_n(x_n) = y_n
+        \end{array}\right.\Leftrightarrow\left\{
+        \begin{array}{l}
+        a_0 + a_1 x_0 + a_2 x_0^2 + \ldots + a_n x_0^n  = y_0 \\
+        a_0 + a_1 x_1 + a_2 x_1^2 + \ldots + a_n x_1^n = y_1 \\
+        a_0 + a_1 x_2 + a_2 x_2^2 + \ldots + a_n x_2^n = y_2 \\
+        \hspace{0.1cm} \vdots \hspace{1cm} \vdots \hspace{1.2cm} \vdots \hspace{0.78cm} \ldots \hspace{0.8cm} \vdots \\
+        a_0 + a_1 x_n + a_2 x_n^2 + \ldots + a_n x_n^n = y_n
+        \end{array}\right.
+    \end{equation}
+
+    Podemos determinar os coeficientes reescrevendo o sistema na forma matricial:
+
+\begin{center}  
+    $AX = B \Leftrightarrow$
+    $\begin{bmatrix}
+    1 & x_0 & x_0^2 & \ldots & x_0^n \\
+    1 & x_1 & x_1^2 & \ldots & x_1^n \\
+    1 & x_2 & x_2^2 & \ldots & x_2^n \\
+    \vdots & \vdots & \vdots & \ldots & \vdots \\
+    1 & x_n & x_n^2 & \ldots & x_n^n \\
+    \end{bmatrix}.$  
+    $\begin{bmatrix}
+    a_0 \\
+    a_1 \\
+    a_2 \\
+    \vdots \\
+    a_n \\
+    \end{bmatrix} =$
+    $\begin{bmatrix}
+    y_0 \\
+    y_1 \\
+    y_2 \\
+    \vdots \\
+    y_n \\
+    \end{bmatrix}$
+\end{center}
+
+
+   
+   
+
+
+
+   
+
+\subsection{Polinómio de Lagrange}
+\hspace{0.5cm}Com o avanço da matemática ao longo dos anos, a Matriz de Vandermonde tornou-se um método obsoleto, devido ao trabalhoso processo de resolver o sistema de equações na forma matricial para obter os coeficientes do polinómio interpolador. Assim em 1795, o matemático Joseph-Louis Lagrange desenvolveu uma técnica de interpolação, ficando conhecida como: "Interpolação polinomial de Lagrange" \cite{wikipedia1}.
+
+\hspace{0.5cm}Apesar deste processo ser nomeado em homenagem ao matemático francês Joseph-Louis Lagrange, com a sua publicação em 1795, existem rumores que esta técnica tinha sido descoberta anteriormente em 1779 pelo matemático Edward Waring. Foi também devido a uma fórmula publicada em 1783 por Leonhard Euler, outro famoso matemático.
+
+\hspace{0.5cm}O polinómio de Lagrange consiste em um único polinómio, construido através de diversas funções polinomiais que intersetam os diferentes nodos de interpolação. A fórmula geral para este polinómio é:
+
+\begin{equation}
+    \sum_{k=0}^{n} f(x_k) \times \varphi_{n, k}(x)
+\end{equation}
+
+ tal que:
+
+\begin{equation}
+    \varphi_{n,k}(x) = \prod_{\substack{i=0 \\ i \neq k}}^{n} \frac{x - x_i}{x_k - x_i},\, k=0,1,...,n
+\end{equation}
+
+onde n é o grau do nosso polinómio interpolador. Repare-se que para cada polinómio base temos:
+\begin{enumerate}
+    \item $\varphi_{n,k}(x_i) = 1$
+    \item $\varphi_{n,k}(x) = 0$ para $x \neq x_i$
+\end{enumerate}\cite{website1}
+
+{\bf{\textcolor{blue}{Exemplo 1}}}: Consideremos agora um caso particular da construção do polinómio de Lagrange. Sejam a, b e c os pontos de coordenadas $(2, 3), (1, 5), (3, -2)$. Queremos construir um polinómio de grau $n$, que interpole este conjunto de dados. Aplicando a fórmula:
+
+
+\begin{equation}
+\varphi_0(x) = \frac{(x - 1)(x - 3)}{(2 - 3)(2 - 1)} \Leftrightarrow
+\varphi_0(x) = \frac{(x - 1)(x - 3)}{-1} \Leftrightarrow
+\varphi_0(x) = -x^2 + 4x - 3
+\end{equation}
+
+\begin{equation}
+\varphi_1(x) = \frac{(x - 2)(x - 3)}{(1 - 3)(1 - 2)} \Leftrightarrow
+\varphi_1(x) = \frac{(x - 2)(x - 3)}{2} \Leftrightarrow
+\varphi_1(x) =  \frac{1}{2} x^2 - \frac{5}{2}x + 3
+\end{equation}
+
+\begin{equation}
+\varphi_2(x) = \frac{(x - 2)(x - 1)}{(3- 2)(3- 1)} \Leftrightarrow
+\varphi_2(x) = \frac{(x - 2)(x - 1)}{2} \Leftrightarrow
+\varphi_2(x) =  \frac{1}{2} x^2 - \frac{3}{2} x + 1
+\end{equation}
+
+\hspace{0.5cm}Assim obtemos as expressões de três polinómios, cada um passando por um dos nodos de interpolação. Para construir o polinómio interpolador final, somamos cada um dos polinómios base multiplicado pelo valor \( y_i \) correspondente ao ponto \( x_i \) que ele interpola. Esta multiplicação garante-nos que o polinómio interpolador assume o valor \( y_i \) em \( x_i \), respeitando os pontos fornecidos. A expressão final do polinómio interpolador de Lagrange que passa pejo conjunto de dados $(2, 3), (1, 5), (3, -2)$ é:
+
+\begin{align}
+P(x) &= 3 \times (-x^2 + 4x - 3) + 5 \times \left(\frac{1}{2} x^2 - \frac{5}{2}x + 3\right) - 2 \times \left(\frac{1}{2} x^2 - \frac{3}{2}x + 1\right) \\
+&\Leftrightarrow P(x) = -\frac{3}{2} x^2 + \frac{5}{2}x + 4
+\end{align}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.7\linewidth]{Images/pic1.png}
+    \caption{\hspace{0.5cm}\textcolor{red}{Figura 1:}Polinómio Interpolador $P_2(x)$}
+    \label{Polinómio interpolador}
+\end{figure}
+
+
+\subsection{Análise do erro}
+
+\hspace{0.5cm}O polinómio $P(x)$ e a função $f(x)$ coincidem nos pontos interpoladores. Logo para descobrir se o polinómio tem uma boa aproximação, calculamos o erro de interpolação em  $ x \neq {x_{0}}, {x_{1}}, ..., {x_{n}}$.
+    \begin{equation}
+    \xi(x)=f(x)-P(x)
+    \end{equation}
+   
+     \hspace{0.5cm}Visto que ${x_{0}}, {x_{1}}, ..., {x_{n}} $ são os nós de interpolação, o erro nestes mesmos é zero, pois $f(x_{i})=P(x_{i})$, ou seja temos,
+    \begin{equation}
+    \xi(x)=0\ , \ x=x_{0},{x_{1}}, ..., {x_{n}}
+    \end{equation}
+
+   
+    \hspace{0.5cm}Sejam $x_{0}, {x_{1}}, ..., {x_{n}}$ números distintos do intervalo [a, b] e seja $f$ $\in$ $C^{n+1}$ [a, b]. Então, para cada $x$ $\in$  [a, b], existe um número $\zeta$ (geralmente desconhecido) em $(a, b)$ tal que
+    \begin{equation}
+    f (x)= P(x)+\frac{f^{(n+1)}(\zeta)}{(n+1)!}{(x-{x_{0}})(x-x_{1})...(x-x_{n})},
+    \end{equation}
+   
+    \hspace{0.5cm}onde $P(x)$ é o polinómio de grau $\leq n$ interpolador de $f$ nos nodos $x_i,\, i=0,1,...,n.$.
+
+    \hspace{0.5cm}Consideremos a fórmula do erro seguinte,
+    \begin{equation}
+    \xi(x)=f(x)-P(x)
+    \end{equation}
+    \hspace{0.5cm}Para determinar a expressão de $\xi(x)$, para todo o $k = 0,1,..,n$ em $x \neq x_{k}$ definimos uma função auxiliar g para $t \in [a,b]$, \cite{website}
+    \begin{equation}
+    g(t) = f(t)-P(t)- [f(x)-P(x)] \prod_{i=0}^{n} \frac{(t-x_{i})}{(x-x_{i})},
+    \end{equation}
+
+    \hspace{0.5cm}Visto que $f \in C^{n+1}[a,b]$ e $P \in C^{\infty}[a,b]$, temos que $g \in C^{n+1}[a,b]$
+   
+    \hspace{0.5cm}Para $t=x_{k}$, temos
+    \begin{equation}
+        g(x_{k})= f(x_{k})-P(x_{k})- [f(x)-P(x)] \prod_{i=0}^{n} \frac{(x_{k}-x_{i})}{(x-x_{i})}
+    \end{equation}
+    \hspace{0.5cm}Para $t=x$, temos
+    \begin{equation}
+        g(x)= f(x)-P(x)- [f(x)-P(x)] \prod_{i=0}^{n} \frac{(x-x_{i})}{(x-x_{i})}
+    \end{equation}
+   
+    \hspace{0.5cm}Visto que $g \in C^{n+1}[a,b]$ e $g$ tem n+2 zeros distintos, $x, x_{0}, x_{1},..., x_{n}$, podemos  concluir pelo teorema de Rolle que existe um número $\gamma \in [a,b]$ para qual $g^{n+1}(\gamma)=0$. Temos então,
+    \begin{equation}
+    0=g^{(n+1)}(\gamma)=f^{(n+1)}(\gamma)-P^{(n+1)}(\gamma)- [f(x)-P(x)] \frac{d^{n+1}}{dt^{n+1}} \prod_{i=0}^{n} \frac{(t-x_{i})}{(x-x_{i})}
+    \end{equation}
+   
+    \hspace{0.5cm}Dado que $P(x)$ é um polinómio de grau n, a derivada de ordem n+1 é zero. Seja
+    \begin{equation}
+    Q(t)=\prod_{i=0}^{n} \frac{(t-x_{i})}{(x-x_{i})}
+    \end{equation}
+    \hspace{0.5cm}Assim $Q$ é um polinómio de grau $n+1$ pelo que
+    \begin{equation}
+    Q^{(n+1)}(t)= a_{n+1} (n+1)!\   , \ a_{n+1}= \prod_{i=0}^{n} \frac{1}{(x-x_{i})}
+    \end{equation}
+
+    \hspace{0.5cm}Ou seja\cite{website0},
+    \begin{equation}
+    g^{(n+1)}(\gamma)=f^{(n+1)}(\gamma)-0-[f(x)-P(x)] \frac{(n+1)!}{\prod_{i=0}^{n}(x-x_{i})}
+    \end{equation}
+    \begin{equation}
+    \Leftrightarrow f(x) - P(x)= \frac{f^{n+1}(\gamma)}{(n+1)!}  \prod_{i=0}^{n} (x-x_{i})
+    \end{equation}
+    \begin{equation}
+    \Leftrightarrow \xi(x)= \frac{f^{n+1}(\gamma)}{(n+1)!}  \prod_{i=0}^{n} (x-x_{i})
+    \end{equation}
+
+
+
+
+\section{Exemplos de aplicação}
+\hspace{0.5cm}Nesta secção vamos apresentar alguns exemplos práticos de aplicações da interpolação polinomial em problemas reais. Utilizamos como base a aproximação de integrais e a previsão do clima ao longo de um dia. Foi usado um algoritmo na linguagem Python para processar os nossos conjuntos de dados.
+
+
+
+\subsection{Fenómeno de Runge}
+
+\hspace{0.5cm}Nesta secção, consideremos a função de Runge definida por:
+\[f(x)= \frac{1}{1-25x^2}, \forall x \in [-1,1]\]
+\hspace{0.5cm}Neste caso, a escolha dos pontos de interpolação é importante. Para isso, utilizaremos a seguinte fórmula:
+\[ x_{i}= \frac{2i}{n}-1, i=0,1,\dots, n.\]
+\hspace{0.5cm}Onde $n$ é o grau do polinómio interpolador e $i$ é o índice de cada um dos pontos de interpolação ($x_0,x_1,\dots,x_n$). Assim, teremos $n+1$ pontos de interpolação equidistantes.
+
+\hspace{0.5cm}Nos gráficos seguintes temos a comparação entre $f$ e diferentes polinómios interpoladores, aos quais chamemos de $P_n$.
+\begin{figure} [ht]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/P10.png}
+    \includegraphics[width=0.4\linewidth]{Images/P15.png}
+    \includegraphics[width=0.4\linewidth]{Images/P20.png}
+    \caption{\hspace{0.5cm}\textcolor{red}{Figura 2:} Interpolação da função $f(x)$ com o polinómio interpolador de Lagrange, de grau 10, $P_{10}$, grau 15, $P_{15}$ e grau 20, $P_{20}$, respectivamente.}
+\end{figure}
+\FloatBarrier
+\hspace{0.5cm}Como se pode observar, quando se faz a interpolação de $f(x)$ com $n+1$ pontos, nas extremidades do intervalo $x\in[-1,1]$ a interpolação começa a oscilar e quanto maior for $n$, ou seja, quanto mais pontos se utilizar para fazer a interpolação, o erro tende para $+\infty$, isto significa\cite{wikipedia2}:
+\[\lim _{n\to\infty }\sup _{-1\leq x\leq 1}|f(x)-P_{n}(x)|=+\infty\]
+\hspace{0.5cm}Onde sup representa o supremo de $|f(x)- P_n(x)|$, ou seja, o erro máximo no intervalo $-1\leq x \leq 1$.
+
+\hspace{0.5cm}Isto acontece pois a magnitude de $\frac{d^n+1}{dx^n+1}(\frac{1}{1+25x^2})$(o quão rápido $\frac{d^n+1}{dx^n+1}(\frac{1}{1+25x^2})$ cresce, $\forall x\in[-1,1]$) aumenta rapidamente quando n aumenta.
+\begin{figure} [ht]
+    \centering
+    \includegraphics[width=0.3\linewidth]{Images/1derivada.png}
+    \includegraphics[width=0.3\linewidth]{Images/2derivada.png}
+    \includegraphics[width=0.3\linewidth]{Images/3derivada.png}
+    \caption*{\hspace{0.5cm}\textcolor{red}{Figura 3:} $\frac{d}{dx}f(x), \frac{d^2}{dx^2}f(x)$, e $\frac{d^3}{dx^3}f(x)$, respectivamente.}
+\end{figure}
+
+\hspace{0.5cm}Quando $n=0$, o máximo de $\frac{d}{dx}(\frac{1}{1+25x^2})$ é de $\frac{15\sqrt{3}}{8} \approx 3.2476$, mas quando $n=1$ o máximo de $\frac{d^2}{dx^2}(\frac{1}{1+25x^2})$ cresce para $\frac{25}{2}=12.5$ e quando $n=2$ o máximo de $\frac{d^3}{dx^3}(\frac{1}{1+25x^2})$ já é de $\frac{1875}{16}\sqrt{\frac{25}{2}+\sqrt{\frac{11\sqrt{5}}{2}}} \approx 583.5699$.
+
+
+
+\hspace{0.5cm}A outra razão para o fenómeno de Runge acontecer, é que a equidistância dos pontos de interpolação resulta numa elevada constante de Lebesgue \cite{wikipedia3}, $\Lambda_n$, e quanto maior for $\Lambda_n$(X), maior será o erro da interpolação . A constante de Lebesgue é dada por: \[\Lambda_n(X)=\max_{-1\leq x\leq 1}\sum\limits_{k=0}^{n}|L_{n,k}|, X \in \{x_0,\ldots,x_n\}\]
+
+\hspace{0.5cm}No entanto para a interpolação de funções oscilatórias(funções que mostram oscilações rápidas), funções descontínuas(para a interpolação perto da descontinuidade), funções com assíntotas(para a interpolação perto das assíntotas), e funções de crescimento rápido,
+$\Lambda_n(X)\sim\frac{2^{n+1}}{nlog(n)}$, e como $\frac{1}{1+25x^2}$ entra neste tipo de funções e $\lim\limits_{n\to\infty}{\frac{2^{n+1}}{nlog(n)}}=\infty$, concluímos que, quanto maior for n maior será também $\Lambda_n(X)$ da interpolação da função $\frac{1}{1+25x^2}$,consequentemente maior será o erro, outro exemplo de função onde o fenómeno de Runge ocorre é $sin(\frac{1}{x})$
+
+\hspace{0.5cm}Para provar que o erro da interpolação está limitado pela constante de Lebesgue\cite{Video}, defenimos $I_n: C[a,b] \rightarrow \mathbb{P}_n[a,b]$, onde $I_n$ é linear e representa o mapa da interpolação polinomial, no caso da função de Runge $a=-1$ e $b=1$.
+
+\hspace{0.5cm}Prova:\\
+$||I_n(f)||_\infty = ||\sum\limits_{i=0}^nf(x_i)L_i||_\infty = \max\limits_{x \in [a,b]}\sum\limits_{i=0}^{n}|f(x_i)L_i(x)| \leq \max\limits_{x \in [a,b]}\sum\limits_{i=0}^{n}|f(x_i)||L_i(x)|\vspace{0.1cm} \leq (\max\limits_{i = 0,1, \dots, n}|f(x_i)|)\max\limits_{x \in [a,b]}\sum\limits_{i=0}^{n}|L_i(x)| \leq ||f||_\infty\max\limits_{x \in [a,b]}\sum\limits_{i=0}^{n}|L_i(x)| = ||f||_\infty\Lambda_n(X)\vspace{0.3cm}\\ \implies \frac{||I_n(f)||_\infty}{||f||_\infty} \leq \Lambda_n(X)$
+
+\hspace{0.5cm}Seja $p^*_n \in \mathbb{P}_n$ a melhor aproximação de norma infinita de f, i.e. $||f-p^*_n||_\infty \leq ||f-y||_\infty \forall y \in \mathbb{P}_n$, então $p^*_n$ é único e em geral desconhecido.
+
+\hspace{0.5cm}Então podemos relacionar o erro de interpolação com o menor erro possível\\($||f-p^*_n||_\infty$):\\
+$||f-I_n(f)||_\infty \leq ||f-p^*_n||_\infty + ||p^*_n-I_n(f)||_\infty = ||f-p^*_n||_\infty + ||I_n(p^*_n)-I_n(f)||_\infty\vspace{0.3cm} = ||f-p^*_n||_\infty + ||I_n(p^*_n-f)||_\infty = ||f-p^*_n||_\infty + \frac{||I_n(p^*_n-f)||_\infty}{||p^*_n-f||_\infty}||f-p^*_n||_\infty\vspace{0.3cm} \leq ||f-p^*_n||_\infty + \Lambda_n(X)||f-p^*_n||_\infty = (1+\Lambda_n(X))||f-p^*_n||_\infty \implies ||f-I_n(f)||_\infty \leq (1+\Lambda_n(X))||f-p^*_n||_\infty $
+
+\hspace{0.5cm}Concluímos assim que quanto maior for a constante de Lebesgue maior será o erro de aproximação.
+
+\hspace{0.5cm}Para lidar com este problema, foram utilizados vários polinómios para a interpolação, ao invés de apenas um.
+O primeiro passo consiste em separar o domínio da função em três intervalos distintos, $[-1,{x_m}]$, $[x_m,x_n]$ e $[x_n,1]$, onde $x_m, x_n \in ]-1,1[$ e $x_m<x_n$.
+É importante que o intervalo $[x_m,x_n]$ tenha estes extremos, pois isso garante a continuidade da função de interpolação que estará agora definido em ramos.
+
+\hspace{0.5cm}De seguida, escolhemos quantos nodos de interpolação iremos usar, mantendo a equidistância entre os mesmos em cada intervalo.
+
+
+
+\begin{figure} [ht]
+    \centering
+    \includegraphics[width=0.3\linewidth]{Images/3_1.png}
+    \includegraphics[width=0.3\linewidth]{Images/3_2.png}
+    \includegraphics[width=0.3\linewidth]{Images/3_3.png}
+    \includegraphics[width=0.3\linewidth]{Images/3_1_erro.png}
+    \includegraphics[width=0.3\linewidth]{Images/3_2_erro.png}
+    \includegraphics[width=0.3\linewidth]{Images/3_3_erro.png}
+    \caption{Interpolação da função $f$ por diferentes funções definidas por ramos: $P_{n1}$, $P_{n2}$ e $P_{n3}$ e os respetivos erros}
+\end{figure}
+
+Representaremos cada um dos polinómios que definem as funções interpoladoras por $P_p$, $P_q$ e $P_r$, onde $p$, $q$ e $r$ são os graus de cada polinómio.
+\begin{equation*}
+     P_{n1}(x)=
+    \begin{cases}
+   
+        P_3,\hspace{0.3cm}Se\hspace{0.2cm} -1\leq x \leq -\frac{2}{5}\\
+        P_7,\hspace{0.3cm}Se\hspace{0.2cm} -\frac{2}{5}\leq x \leq \frac{3}{5}\\
+        P_3,\hspace{0.3cm}Se\hspace{0.2cm} \frac{3}{5}\leq x \leq 1
+   
+    \end{cases}
+\end{equation*}
+\begin{equation*}
+     P_{n2}(x)=
+    \begin{cases}{}
+        P_3,\hspace{0.3cm}Se\hspace{0.2cm} -1\leq x \leq -\frac{1}{5}\\
+        P_9,\hspace{0.3cm}Se\hspace{0.2cm} -\frac{1}{5}\leq x \leq \frac{1}{5}\\
+        P_2,\hspace{0.3cm}Se\hspace{0.2cm} \frac{1}{5}\leq x \leq 1
+    \end{cases}
+\end{equation*}
+\begin{equation*}
+     P_{n3}(x)=
+    \begin{cases}
+   
+        P_4,\hspace{0.3cm}Se\hspace{0.2cm} -1\leq x \leq -\frac{3}{10}\\
+        P_{14},\hspace{0.1cm}Se\hspace{0.2cm} -\frac{3}{10}\leq x \leq \frac{3}{10}\\
+        P_4,\hspace{0.3cm}Se\hspace{0.2cm} \frac{3}{10}\leq x \leq 1
+   
+    \end{cases}
+\end{equation*}
+
+\hspace{0.5cm}Como podemos observar, quanto maior o grau do polinómio, melhor é a aproximação, ou seja, menor é o erro. No caso da estratégia utilizada, é fácil de perceber que o polinómio no intervalo $[x_m,x_n]$ tem de ter um grau mais elevado do que o dos outros intervalos. Isto acontece devido ao comportamento da função $f$ nesse intervalo, que causa uma maior oscilação dos valores do polinómio interpolador. $P_{n3}$ é a função com a melhor aproximação, pois os valores do erro são muito baixos.
+
+\subsubsection{Comparação com Polinómio de Taylor}
+\hspace{0.5cm}Existem diferentes estratégias de aproximação de funções não polinomiais através de polinómios.
+Uma dessas estratégias é através do polinómio de Taylor:
+\begin{equation*}
+    P(x)=f(a)+ \sum_{k=1}^{n} \frac{f^{(k)}(a)}{k!}. (x-a)^k
+\end{equation*}
+
+\hspace{0.5cm}Façamos uma comparação entre as duas interpolações, uma através do polinómio de Lagrange e a outra pelo polinómio de Taylor, da função $g(x) = e^x$
+
+
+\hspace{0.5cm}Sejam $P_L(x)$ o polinómio de Lagrange e $P_T(x)$ de grau 4 ,com as abcissas dos pontos interpoladores $x \in \{-5,-\frac{5}{2},0,\frac{5}{2},5\}$ e o polinómio de Taylor, mais precisamente, o polinómio de MacLaurin, de grau 4 também.
+\begin{figure} [ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/taylor_and_lagrange.png}
+    \caption{Interpolação de $g$ através de polinómios de Lagrange e Taylor}
+\end{figure}
+
+\hspace{0.5cm}Como podemos observar, o facto de $P_L(x)$ utilizar vários nodos para a interpolação permite que o erro em cada um desses pontos seja nulo, Enquanto $P_T(x)$ apenas tem o ponto $(0,1)$ em comum com a função $g$, sendo esse o único ponto onde o erro é nulo. Vale a pena ainda realçar que, quando o limite do sumatório da série de Taylor é $\infty$ e se fizermos o teste da raiz ou teste de Cauchy\cite{wikipedia4}, \[L = \lim _{n\to\infty }\sum_{n=0}^{\infty}\sqrt{|a_n|}\] se $L < 1$ entâo a série vai ser absolutamente convergente, para a série de Taylor centrada em qualquer $ x\in\mathbb{R}$, ou seja, vai convergir $\forall x \in \mathbb{R}$, por outras palavras, a série de Taylor vai ser igual à função original, ao contrário do polinómio interpolador de Lagrange que vai ser sempre uma aproximação da função original num dado intervalo.
+
+\hspace{0.5cm}E.g: $e^x = \sum\limits_{n}^{\infty}\frac{x^n}{n!}$ e $sin(x) = \sum\limits_{n}^{\infty}\frac{(-1)^nx^{2n+1}}{(2n+1)!}$. no âmbito deste relatório estas séries de Taylor são pouco úteis, pois computar polinómios infinitos é impossível, porém no cálculo e na análise há situações em que é mais vantajoso usar as séries de Taylor infinitas ao invés das funções originais.  
+
+\subsection{Aproximação de integrais}
+
+\hspace{0.5cm}Para calcular o integral de Riemann, começamos por calcular a primitiva da função integranda. Repare-se que há funções que não é possível calcular as primitivas através de funções elementares, e.g: $e^{x^2}$, $e^{e^x}$ $\frac{1}{ln(x)}$, $sin({x^2})$, $x^x$, $\frac{1}{\sqrt{x^3-x}}$.  Por fim, calculamos a diferença entre a primitiva avaliada no limite superior e no limite inferior do integral.
+
+
+\hspace{0.5cm}Um dos métodos para se conseguir calcular uma boa aproximação dos integrais não elementares é usando o polinómio interpolador de Lagrange, transformando as funções que não têm primitivas em funções polinomiais, que são primitiváveis e bastante fáceis de calcular e de avaliar computacionalmente.
+
+
+\hspace{0.5cm} Por motivos de legibilidade, nestes exemplos vamos arredondar os valores na quarta casa decimal, pois a maior parte dos integrais não elementares têm valores irracionais.
+
+\hspace{0.5cm}Primeiro integral:
+\[\hspace{-5cm}\int\limits_{0}^{1}e^{x^2}\hspace{0.1cm}dx\approx0.8252\sqrt{\pi}\approx1.4626\]
+\hspace{0.5cm}Calculando o integral com $P_2(x)$, $P_3(x)$ e $P_4(x)$, respectivamente:
+\[\hspace{-6cm}\int\limits_{0}^{1}2.3005x^2-0.5822x+1\hspace{0.1cm}dx\approx1.4757\] \[\hspace{-4cm}\int\limits_{0}^{1}1.7639x^3-0.3032x^2+0.2576x+1\hspace{0.1cm}dx\approx1.4687\]
+\[\hspace{-2cm}\int\limits_{0}^{1}1.5385x^4-1.2789x^3+1.5263x^2-0.0677x+1\hspace{0.1cm}dx\approx1.4629\]
+
+\hspace{0.5cm}Segundo integral:
+\[\hspace{-2cm}\int\limits_{0}^{\pi}sin(x^2)\hspace{0.1cm}dx=3\sqrt{2\pi}S(\sqrt{2\pi})\frac{\Gamma(\frac{3}{4})}{8\Gamma(\frac{7}{4})}\approx0.7727\]
+\[\hspace{-3cm}S(x)=\int\limits_{0}^{x}sin(t^2)\hspace{0.1cm}dt\hspace{0.1cm} \text{\cite{wikipedia5}}, \hspace{0.3cm}\Gamma(s)=\int\limits_{0}^{\infty}t^{s-1}e^{-t}\hspace{0.1cm}dt\]
+
+\hspace{0.5cm}Calculando o integral com $P_2(x)$, $P_3(x)$ e $P_4(x)$, respectivamente:
+\[\hspace{-3.3cm}\int\limits_{0}^{\pi}-\frac{3.3577}{\pi^2}x^2+\frac{2.9274}{\pi}x\hspace{0.1cm}dx\approx0.3445\pi\approx1.0823\]
+\[\hspace{-1cm}\int\limits_{0}^{\pi}\frac{22.8636}{\pi^3}x^3-\frac{35.1338}{\pi^2}x^2+\frac{11.8399}{\pi}x\hspace{0.1cm}dx\approx-0.0754\pi\approx-0.2369\]\vspace{0.1cm}
+\[\hspace{-0.2cm}\int\limits_{0}^{\pi}\frac{39.1836}{\pi^4}x^4-\frac{67.3664}{\pi^3}x^3+\frac{29.1206}{\pi^2}x^2-\frac{1.3681}{\pi}x\hspace{0.1cm}dx\approx0.0179\pi\approx0.0562\]
+
+\hspace{0.5cm}Terceiro integral:
+\[\hspace{-5cm}\int\limits_{\frac{\pi}{2}}^{\pi}\frac{1}{ln(x)}\hspace{0.1cm}dx\approx1.9995\]
+\hspace{0.5cm}Calculando o integral com $P_2(x)$, $P_3(x)$ e $P_4(x)$, respectivamente:
+\[\hspace{-0.6cm}\int\limits_{\frac{\pi}{2}}^{\pi}\frac{6.0352}{\pi^2}x^2-\frac{11.7347}{\pi}x+6.5729\hspace{0.1cm}dx\approx0.6463\pi\approx2.0304\]
+\[\hspace{0cm}\int\limits_{\frac{\pi}{2}}^{\pi}-\frac{14.3985}{\pi^3}x^3+\frac{38.6629}{\pi^2}x^2-\frac{35.4787}{\pi}x+12.0879\hspace{0.1cm}dx\approx0.6415\pi\approx2.0153\]
+\[\hspace{0cm}\int\limits_{\frac{\pi}{2}}^{\pi}\frac{34.9434}{\pi^4}x^4-\frac{119.9577}{\pi^3}x^3+\frac{155.8221}{\pi^2}x^2-\frac{92.0079}{\pi}x+22.0736\hspace{0.1cm}dx\approx0.6372\pi\approx2.0018\]
+\hspace{0.5cm}Como podemos observar, nos casos das funções $e^{x^2}$ e $\frac{1}{ln(x)}$, o quão maior é o grau do polinómo interpolador, mais próximo é o valor dos integrais dos polinómios relativamente ao valor real.
+
+\hspace{0.5cm}No entanto, no caso da função $sin(x^2)$ o contrário acontece. O quão maior é o grau do polinómio, maior é o erro relativamente ao valor real. Isso acontece devido à elevada oscilação da função original e sucede-se o mesmo fenómeno que vimos na função de Runge. Ou seja, para lidar com esta função, e outras com propriedades semelhantes, temos de encontrar estratégias para diminuir o erro da aproximação como a que utilizámos anteriormente,por exemplo. Fazendo a interpolação através de uma função definida por ramos e separar o integral original em três, onde os limites de cada integral são os extremos de cada um dos intervalos de interpolação.
+
+
+\subsection{Previsão de temperatura}
+
+\hspace{0.5cm}Na área da meteorologia são utilizadas medições de forma discreta, ou seja, procura-se capturar dados em intervalos específicos de forma descontinua para assim realizar previsões do clima, contudo existem momentos onde precisamos de saber a temperatura de um dado momento do dia. Nesta secção vamos aplicar a interpolação polinomial à previsão do clima de um determinado dia em diferentes localizações geográficas.
+
+\hspace{0.5cm} O dia selecionado para a previsão foi 7 de Novembro de 2024, sendo as localizações: Estoril, Lisboa, Portugal, Osaka, Japão, Arizona, EUA e Benoni, África do sul..
+
+\hspace{0.5cm}\textbf{1º caso:}
+
+\hspace{0.5cm}No primeiro caso vamos analisar a variação de temperatura no Estoril, em Lisboa, Portugal. Temos as seguintes previsões de temperatura:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Horas do dia} & \textbf{Temperatura (ºC)} \\
+        \hline
+        02.00h & 16ºC \\
+        \hline
+        07.00h & 15ºC \\
+        \hline
+        12.00h & 20ºC \\
+        \hline
+        17.00h & 21ºC \\
+        \hline
+        22.00h & 17ºC \\
+        \hline
+    \end{tabular}
+    \caption{Previsão temperatura 07/11/2024- Lisboa, Portugal\cite{estorilWeather24}}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Portugal.jpeg}
+    \caption{Previsão temperatura (Lisboa)}
+\end{figure}
+
+\hspace{0.5cm}\textbf{2º caso:}
+
+\hspace{0.5cm}No segundo caso vamos analisar a variação de temperatura no estado do Arizona, nos EUA. Temos as seguintes previsões de temperatura:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Horas do dia} & \textbf{Temperatura (ºC)} \\
+        \hline
+        02.00h & 12ºC \\
+        \hline
+        07.00h & 14ºC \\
+        \hline
+        12.00h & 17ºC \\
+        \hline
+        17.00h & 20ºC \\
+        \hline
+        22.00h & 17ºC \\
+        \hline
+    \end{tabular}
+    \caption{Previsão temperatura 07/11/2024- Arizona, EUA\cite{phoenixWeather24}}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Arizona.jpeg}
+    \caption{Previsão temperatura (Arizona)}
+\end{figure}
+\FloatBarrier
+
+\hspace{0.5cm}\textbf{3º caso:}
+
+\hspace{0.5cm}No terceiro caso vamos analisar a variação de temperatura no Benoni, África do Sul. Temos as seguintes previsões de temperatura:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Horas do dia} & \textbf{Temperatura (ºC)} \\
+        \hline
+        02.00h & 14ºC \\
+        \hline
+        07.00h & 14ºC \\
+        \hline
+        12.00h & 23ºC \\
+        \hline
+        17.00h & 27ºC \\
+        \hline
+        22.00h & 16ºC \\
+        \hline
+    \end{tabular}
+    \caption{Previsão temperatura 07/11/2024- Benoni, África do Sul\cite{weathersparkBenoni}}
+\end{table}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Benoni.jpeg}
+    \caption{Previsão temperatura (Benoni)}
+\end{figure}
+
+\FloatBarrier
+
+\hspace{0.5cm}\textbf{4º caso:}
+
+\hspace{0.5cm}No quinto caso vamos analisar a variação de temperatura em Osaka, Japão. Temos as seguintes previsões de temperatura:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Horas do dia} & \textbf{Temperatura (ºC)} \\
+        \hline
+        02.00h & 13ºC \\
+        \hline
+        07.00h & 13ºC \\
+        \hline
+        12.00h & 15ºC \\
+        \hline
+        17.00h & 14ºC \\
+        \hline
+        22.00h & 12ºC \\
+        \hline
+    \end{tabular}
+    \caption{Previsão temperatura 07/11/2024- Osaka, Japão\cite{osakaWeather24}}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/Osaka.jpeg}
+    \caption{Previsão temperatura (Osaka)}
+\end{figure}
+
+\hspace{0.5cm}Através da análise das tabelas e dos gráficos obtidos, podemos concluir quais serão as temperaturas durante as diferentes horas do dia ou informação, como por exemplo, a amplitude térmica. De seguida, vamos efetuar uma análise detalhada sobre cada um dos gráficos de modo a tirar conclusões.
+
+\hspace{0.5cm}
+No Estoril, podemos observar uma amplitude térmica moderada, com temperaturas a variar entre os 13-21ºC. As temperaturas máximas são atingidas aproximadamente durante as 15:00h, sendo as mínimas atingidas por volta das 5:00h. Podemos observar no gráfico uma descida considerável da temperatura durante a noite, com um ligeiro aumento durante o dia. Este comportamento é típico de regiões litorais, como é o caso da cidade de Lisboa. É de esperar um dia de clima ameno.
+
+\hspace{0.5cm}
+Repare-se que no estado do Arizona temos uma amplitude térmica elevada, com as temperaturas a oscilar entre os 11-21ºC. Podemos observar um pico de temperatura durante a tarde. As temperaturas máximas e mínimas serão alcançadas respetivamente às 00:00h e às 18:00h. Observa-se também que as temperaturas são bastante baixas durante a noite, subindo rapidamente durante o dia. Este fenómeno é bastante comum em regiões desertas, devido à escassez de chuva e falta de humidade\cite{mundoEducacaoDeserto}. Podemos supor um dia mais fresco que o habitual.
+
+\hspace{0.5cm}
+Em Benoni, notamos uma tendência semelhante ao Estoril, temperaturas baixas durante a noite com um aumento suave durante o dia. A amplitude térmica é elevada com temperaturas entre os 11-27ºC. As temperaturas máximas são atingidas durante as 16:00h, sendo mínimas durante as 4:00h. Este comportamento do clima deve-se ás características geográficas da localização da cidade, tais como a sua elevada altitude ou a influência do oceano índico e atlântico\cite{benoniWiki}. É de prever um dia de clima agradável na cidade.
+
+\hspace{0.5cm}
+Por fim, Osaka tem um comportamento climático um pouco diferente das outras cidades, com dois picos de temperatura durante a noite. A amplitude térmica é bastante reduzida, com temperaturas entre os 12-16ºC e pequenas variações ao longo do dia. Podemos notar temperaturas bastante reduzidas durante a noite, com o mínimo entre as 3:00-4:00h. Apesar da subida de temperatura durante o dia, sendo o máximo às 13:00h, nunca se verifica temperaturas efetivamente elevadas.
+
+\hspace{0.5cm} Estas temperaturas são devido a fatores geográficos como a proximidade de Osaka com o oceano pacífico, as montanhas que rodeiam a cidade ou a localização da cidade na ilha de Honshu, Japão.
+
+\hspace{0.5cm} Concluímos então que o comportamento térmico das cidades reflete as suas características climáticas específicas, com oscilações de temperatura que variam conforme altitude, proximidade do oceano ou condições geográficas. O Estoril e Benoni, ambas cidades litorais, apresentam amplitudes térmicas moderadas com padrões suaves de aquecimento e arrefecimento ao longo do dia. O Arizona, região desértica, possui amplitudes térmicas mais acentuadas, com grandes variações entre o dia e a noite. Por outro lado, Osaka apresenta uma amplitude térmica reduzida, influenciada pela proximidade do Oceano Pacífico e as montanhas que a rodeiam. Assim, a interpolação polinomial permitiu-nos prever esses padrões e comparar os dados obtidos com o comportamento climático típico de cada região.  
+
+
+\section{Conclusão}
+
+\hspace{0.5cm}Em suma, concluimos que a interpolação polinomial é o método mais eficaz na  aproximação de um dado conjunto de pontos por um polinómio.
+
+\hspace{0.5cm} Desde a Matriz de Vandermonde até ao Polinómio de Lagrange, a interpolação polinomial foi desenvolvida e otimizada para se adaptar aos problemas reais da área de Aproximação. Este método está, no entanto, associado a um certo erro que deve ser considerado e analisado.
+
+\hspace{0.5cm}Neste trabalho explorámos as várias estratégias de obter e analisar a função polinomial interpoladora, ao aplicarmos estes métodos, foram notados casos mais específicos como o Fenómeno de Runge, que verificava grandes oscilações nas extremidades do intervalo interpolado. Assim, de modo a otimizar a aproximização, dividimos o nosso dominio por ramos e utilizámos vários polinómios interpoladores.
+
+\hspace{0.5cm}Analisámos ainda outros métodos conhecidos de aproximação, como o polinómio de Taylor e como exemplos práticos, a aproximação de valores desconhecidos e de integrais.
+
+\hspace{0.5cm}Por fim, abordamos a previsão das condições climatéricas de diferentes lugares do mundo, onde aplicámos alguns do métodos estudados, com o propósito de verificar e provar a sua aplicação em exemplos "reais".
+
+\hspace{0.5cm}Para todos os métodos mencionados foram desenvolvidos diferentes algoritmos em Python, que foram subsequentemente utilizados em todos os exemplos e casos analisados.
+
+\hspace{0.5cm}Como última instância, ficámos a conhecer as diferentes formas de aproximação, as suas aplicações e a importância da interpolação polinomial no "mundo real". Expandindo o nosso conhecimento na área da Teoria de Aproximação.
+
+
+
+
+ 
+\newpage
+
+\printbibliography
+
+\newpage
+\begin{appendices}
+    \section*{Código}
+        \lstinputlisting[language=Python, caption={Código Python para interpolar $n+1$ pontos.}]{PythonCodes.cod/polynomial_Lagrange.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para interpolar a função de Runge com o polinómio interpolador de Lagrange}]{PythonCodes.cod/alg_runge_normal.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para calcular a derivada de ordem $n$ da função de Runge}]{PythonCodes.cod/derivadas.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para solucionar o fenómeno de Runge}]{PythonCodes.cod/alg_runge_3_poli.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para comparar o polinómio interpolador de Lagrange com a série de Taylor}]{PythonCodes.cod/alg_with_taylor_2.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para calcular integrais}]{PythonCodes.cod/integral.py}
+        \newpage
+        \lstinputlisting[language=Python, caption={Código Python para a previsão da temperatura.}]{PythonCodes.cod/polynomial interpolation.py}
+\end{appendices}
+\end{document}
