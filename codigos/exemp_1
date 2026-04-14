@@ -1,0 +1,93 @@
+function tabela_final = exemp_1 ()
+h=[0.25 0.2 0.1 0.05];
+
+f=@(t,y) -30*y;
+T=2;
+alfa=1/3;
+y=@(t) (1/3)*e^(-30*t);
+
+
+
+N=zeros(1,4);
+% o valor de N depende de h nos exemplos
+for i=1:4
+  N(i)=T/h(i);
+endfor
+
+%guardar as diferentes matrizes
+resultados_ee={};% euler explicito
+resultados_heun={};% heun
+resultados_cn={};% crank nicolson
+resultados_ei={};% euler implicito
+
+%fazer as aproximações
+for i=1:4
+  resultado=NaN(N(i)+1,3);
+
+  resultado=euler_explicito(f,0,T,alfa,N(i));
+  resultados_ee=horzcat(resultados_ee,resultado);
+
+  resultado=Heun_explicito(f,0,T,alfa,N(i));
+  resultados_heun=horzcat(resultados_heun,resultado);
+
+  resultado=crank_nicolson(f,0,T,alfa,N(i));
+  resultados_cn=horzcat(resultados_cn,resultado);
+
+  resultado=euler_implicito(f,0,T,alfa,N(i));
+  resultados_ei=horzcat(resultados_ei,resultado);
+endfor
+
+passos=h.';
+erro_abs_ee_2=NaN(4,1);
+erro_abs_heun_2=NaN(4,1);
+erro_abs_cn_2=NaN(4,1);
+erro_abs_ei_2=NaN(4,1);
+erro_abs_ee_1=erro_abs_ee_2;
+erro_abs_heun_1=erro_abs_heun_2;
+erro_abs_cn_1=erro_abs_cn_2;
+erro_abs_ei_1=erro_abs_ei_2;
+
+convergencia_ee_2=erro_abs_ee_2;
+convergencia_heun_2=erro_abs_heun_2;
+convergencia_cn_2=erro_abs_cn_2;
+convergencia_ei_2=erro_abs_ei_2;
+convergencia_ee_1=convergencia_ee_2;
+convergencia_heun_1=convergencia_heun_2;
+convergencia_cn_1=convergencia_cn_2;
+convergencia_ei_1=convergencia_ei_2;
+
+%calcular erro absoluto
+for i=1:4
+  erro_abs_ee_1(i)=abs(resultados_ee{i}(end/2 +0.5,end)-y(1));
+  erro_abs_heun_1(i)=abs(resultados_heun{i}(end/2 +0.5,end)-y(1));
+  erro_abs_cn_1(i)=abs(resultados_cn{i}(end/2 +0.5,end)-y(1));
+  erro_abs_ei_1(i)=abs(resultados_ei{i}(end/2 +0.5,end)-y(1));
+  erro_abs_ee_2(i)=abs(resultados_ee{i}(end,end)-y(T));
+  erro_abs_heun_2(i)=abs(resultados_heun{i}(end,end)-y(T));
+  erro_abs_cn_2(i)=abs(resultados_cn{i}(end,end)-y(T));
+  erro_abs_ei_2(i)=abs(resultados_ei{i}(end,end)-y(T));
+endfor
+
+%calcular o rácio dos erros
+for i=1:3
+  convergencia_ee_1(i+1)=erro_abs_ee_1(i+1)/erro_abs_ee_1(i);
+  convergencia_heun_1(i+1)=erro_abs_heun_1(i+1)/erro_abs_heun_1(i);
+  convergencia_cn_1(i+1)=erro_abs_cn_1(i+1)/erro_abs_cn_1(i);
+  convergencia_ei_1(i+1)=erro_abs_ei_1(i+1)/erro_abs_ei_1(i);
+  convergencia_ee_2(i+1)=erro_abs_ee_2(i+1)/erro_abs_ee_2(i);
+  convergencia_heun_2(i+1)=erro_abs_heun_2(i+1)/erro_abs_heun_2(i);
+  convergencia_cn_2(i+1)=erro_abs_cn_2(i+1)/erro_abs_cn_2(i);
+  convergencia_ei_2(i+1)=erro_abs_ei_2(i+1)/erro_abs_ei_2(i);
+endfor
+
+%preparar a tabela
+tabelinha_ee=horzcat(passos,erro_abs_ee_1,convergencia_ee_1,erro_abs_ee_2,convergencia_ee_2);
+tabelinha_heun=horzcat(passos,erro_abs_heun_1,convergencia_heun_1,erro_abs_heun_2,convergencia_heun_2);
+tabelinha_cn=horzcat(passos,erro_abs_cn_1,convergencia_cn_1,erro_abs_cn_2,convergencia_cn_2);
+tabelinha_ei=horzcat(passos,erro_abs_ei_1,convergencia_ei_1,erro_abs_ei_2,convergencia_ei_2);
+
+%tabela de facto
+tabela=vertcat(tabelinha_ee,tabelinha_heun,tabelinha_cn,tabelinha_ei);
+nomes_linhas=[repmat({'Euler Explicito'},4,1);repmat({'Heun'},4,1); repmat({'Crank-Nicolson'},4,1); repmat({'Euler Implicito'},4,1)];
+tabela_final=table(nomes_linhas,tabela(:,1),tabela(:,2),tabela(:,3),tabela(:,4),tabela(:,5),'VariableNames',{'Metodo','h','Erro Absoluto(t_i=1)','Erro_i+1/Erro_i (1)', 'Erro Absoluto_(t_i=2)','Erro_i+1/Erro_i (2)'});
+endfunction
