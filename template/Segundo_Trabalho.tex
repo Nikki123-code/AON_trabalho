@@ -1,0 +1,297 @@
+% ----------------------------------------------------------------
+% AMS-LaTeX Paper ************************************************
+% **** -----------------------------------------------------------
+\documentclass[a4paper, 10pt, oneside,riqno]{article}
+\usepackage[a4paper,left=2.5cm,right=3.0cm,top=3.5cm,bottom=2cm]{geometry}
+\usepackage[active]{srcltx} % SRC Specials: DVI [Inverse] Search
+\usepackage{fancyhdr}
+\usepackage[portuges]{babel}
+\selectlanguage{portuges}
+\usepackage[latin1]{inputenc}
+%\usepackage[dvips]{graphicx}
+\usepackage{calrsfs}
+\usepackage{graphicx,amsfonts,amssymb,amsmath,amsthm,amsfonts}
+% ----------------------------------------------------------------
+\vfuzz2pt % Don't report over-full v-boxes if over-edge is small
+\hfuzz2pt % Don't report over-full h-boxes if over-edge is small
+% THEOREMS -------------------------------------------------------
+\newtheorem{thm}{Teorema}[section]
+\newtheorem{cor}[thm]{Corolario}
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{prop}[thm]{Proposicao}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definicao}
+\newtheorem{exr}{}{}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Observacao}
+\numberwithin{equation}{section}
+% MATH -------------------------------------------------------------
+\newcommand{\norm}[1]{\left\Vert#1\right\Vert}
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\Real}{\mathbb R}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\To}{\longrightarrow}
+\newcommand{\BX}{\mathbf{B}(X)}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\be}{\begin{eqnarray}}
+\newcommand{\ee}{\end{eqnarray}}
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\ds}{\displaystyle}
+% ------------------------------------------------------------------
+\pagestyle{fancy}
+\renewcommand{\headwidth}{430pt}
+%\renewcommand{\textwidth}{390pt}
+\renewcommand{\headrulewidth}{0pt}
+\addtolength{\textwidth}{4.0cm} \addtolength{\hoffset}{-1.5cm}
+\addtolength{\voffset}{-2.5cm} \addtolength{\headheight}{1.5cm}
+\addtolength{\marginparsep}{1pt} \addtolength{\footskip}{-1cm}
+\addtolength{\paperwidth}{2cm}
+%\renewcommand{\marginparwidth}{90pt}
+% with this we ensure that the chapter and section
+% headings are in lowercase.
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+%\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{} % delete current setting for header and footer
+\fancyfoot[r]{\thepage}
+%\addtolength{\headsep}{12pt}
+%\fancyhead[R]{\bfseries\thepage }
+\fancyhead[L]{ \linespread{1.2} \footnotesize \textsf{}
+\\
+\textsf{{Departamento de Matem\'atica}}
+\\
+\textsf{{NOVA FCT}}
+\\
+\textsf{{2025-2026}} } %\fancypagestyle{plain}
+
+
+%--------------------------------------------------
+\begin{document}
+\linespread{1.5} \noindent
+%\newline
+%\pagenumbering{arabic} \setcounter{page}{1}
+\noindent
+
+\centerline{\Large{\textsf{{An\'alise e Otimização Num\'erica}}}}
+
+\
+
+\centerline{\Large{Trabalho Computacional}}
+
+\
+
+\centerline{{(Entregar at\'e \textbf{ \`as 23h59 de 9 de junho de
+2026})}}
+
+\linespread{1.2}
+
+\normalsize
+
+
+\vspace*{-0.2cm}
+
+\begin{center} {\bf Métodos de Barzilai--Borwein} \end{center}
+
+Considere o problema de otimização sem restrições
+\[
+\min_{x\in\mathbb{R}^n} f(x),
+\]
+onde $f:\mathbb{R}^n\to\mathbb{R}$ é uma função continuamente
+diferenciável.
+
+O método de descida máxima gera uma sucessão de iteradas da forma
+\[
+x_{k+1}=x_k-\alpha_k\nabla f(x_k),
+\]
+onde $\alpha_k>0$ representa um comprimento de passo.
+
+Os métodos de Barzilai--Borwein correspondem a variantes
+espectrais do método de descida máxima, em que o comprimento de
+passo é escolhido utilizando informação proveniente das iteradas
+anteriores. Definindo
+\[
+s_{k-1}=x_k-x_{k-1}, \qquad y_{k-1}=\nabla f(x_k)-\nabla
+f(x_{k-1}),
+\]
+podem considerar-se os seguintes comprimentos de passo:
+\[
+\alpha_k^{BB1}=\frac{s_{k-1}^\top s_{k-1}}{s_{k-1}^\top y_{k-1}},
+\qquad \alpha_k^{BB2}=\frac{s_{k-1}^\top y_{k-1}}{y_{k-1}^\top
+y_{k-1}}.
+\]
+
+{\large{\textit{\textbf{Análise da estrutura algorítmica}}}}
+
+Em todas as questões, justifique detalhadamente as suas respostas.
+Assuma ainda que $s_{k-1}\neq 0$ e $y_{k-1}\neq 0$.
+
+\begin{itemize}
+\item[1.] Uma função $f:\mathbb{R}^n\to\mathbb{R}$ diz-se
+estritamente convexa se:
+$$f(\lambda\, x+(1-\lambda)\,y)<\lambda \, f(x)+ (1-\lambda)f(y), \forall x,y\in\mathbb{R}^n,\forall \lambda\in]0,1[.$$
+Mostre que se $f$ é uma função estritamente convexa e
+continuamente diferenciável então $$[\nabla f(x)-\nabla
+f(y)]^{\top}(x-y)>0,\forall x,y\in\mathbb{R}^n,x\neq y.$$ Conclua
+que $s_{k-1}^{\top} y_{k-1}>0$.
+
+
+\item[2.] Considere o problema de mínimos quadrados
+\[
+\min_{\alpha\in\mathbb{R}}
+\left\|\alpha^{-1}s_{k-1}-y_{k-1}\right\|^2.
+\]
+Assuma que $s_{k-1}^{\top} y_{k-1}>0$ e mostre que a sua solução é
+dada por
+\[
+\alpha_k^{BB1}=\frac{s_{k-1}^\top s_{k-1}}{s_{k-1}^\top y_{k-1}}.
+\]
+
+\item[3.] Considere agora o problema
+\[
+\min_{\alpha\in\mathbb{R}} \left\|s_{k-1}-\alpha
+y_{k-1}\right\|^2.
+\]
+Assuma que $s_{k-1}^{\top} y_{k-1}>0$ e mostre que a sua solução é
+dada por
+\[
+\alpha_k^{BB2}=\frac{s_{k-1}^\top y_{k-1}}{y_{k-1}^\top y_{k-1}}.
+\]
+
+\item[4.] Considere a função quadrática
+\[
+f(x)=\frac12 x^\top A x-b^\top x,
+\]
+onde $A\in\mathbb{R}^{n\times n}$ é simétrica e definida positiva.
+
+Mostre que
+\[
+[\lambda_{\max}(A)]^{-1} \le \alpha_k^{BB1} \le
+[\lambda_{\min}(A)]^{-1}
+\]
+e que
+\[
+[\lambda_{\max}(A)]^{-1} \le \alpha_k^{BB2} \le
+[\lambda_{\min}(A)]^{-1},
+\]
+onde $\lambda_{\min}(A)$ e $\lambda_{\max}(A)$ representam,
+respetivamente, o menor e o maior valor próprio de $A$.
+
+\item[5.] Considere agora o método de descida máxima com procura
+exata aplicado à função quadrática
+\[
+f(x)=\frac12 x^\top A x-b^\top x,
+\]
+onde $A\in\mathbb{R}^{n\times n}$ é simétrica e definida positiva.
+
+Mostre que gradientes consecutivos são ortogonais, isto é,
+\[
+\nabla f(x_{k+1})^\top \nabla f(x_k)=0.
+\]
+
+\item[6.] Discuta o comportamento esperado para:
+
+\begin{itemize}
+\item o método de descida máxima com procura exata; \item os
+métodos de Barzilai--Borwein; \item os métodos de quasi-Newton.
+\end{itemize}
+
+A sua discussão deve incluir aspetos relacionados com:
+
+\begin{itemize}
+\item custo computacional; \item informação utilizada em cada
+iteração; \item taxa de convergência; \item comportamento prático
+esperado.
+\end{itemize}
+
+
+\end{itemize}
+
+{\large{\textit{\textbf{Experimentação Numérica}}}}
+
+Em Octave, implemente os métodos de Barzilai--Borwein
+correspondentes aos comprimentos de passo $BB1$ e $BB2$, bem como
+o método de descida máxima estudado nas aulas.
+
+No caso do método de descida máxima, o comprimento de passo deve
+ser calculado usando uma estratégia de backtracking.
+
+As funções a implementar em Octave deverão ter as seguintes linhas
+de comando:
+
+\begin{verbatim}
+[x_final,f_final,n_feval,n_iter]=BB1(func_f,grad_f,x_ini,tol_stop)
+[x_final,f_final,n_feval,n_iter]=BB2(func_f,grad_f,x_ini,tol_stop)
+[x_final,f_final,n_feval,n_iter]=DMAX(func_f,grad_f,x_ini,tol_stop)
+\end{verbatim}
+
+onde:
+
+\begin{itemize}
+\item \texttt{func\_f} -- nome do ficheiro correspondente à função
+objetivo, a minimizar;
+
+\item \texttt{grad\_f} -- nome do ficheiro correspondente ao
+gradiente da função objetivo, a minimizar;
+
+\item \texttt{x\_ini} -- inicialização a ser fornecida ao método;
+
+\item \texttt{tol\_stop} -- valor mínimo aceite para $\|\nabla
+f(x_k)\|$;
+
+\item \texttt{x\_final} -- iterada final gerada pelo algoritmo;
+
+\item \texttt{f\_final} -- valor da função objetivo na iterada
+final;
+
+\item \texttt{n\_feval} -- número de avaliações da função objetivo
+realizadas;
+
+\item \texttt{n\_iter} -- número de iterações realizadas.
+\end{itemize}
+
+Recorrendo às implementações efetuadas, elabore um estudo
+comparativo dos resultados obtidos com os diferentes métodos
+quando aplicados à minimização de funções.
+
+As comparações devem ter em consideração:
+
+\begin{itemize}
+\item o valor final obtido para a função objetivo; \item o número
+de iterações realizadas; \item o número de avaliações da função
+objetivo; \item a sensibilidade relativamente à inicialização;
+\item o comportamento observado para diferentes níveis de
+condicionamento.
+\end{itemize}
+
+Considere funções quadráticas associadas a matrizes com diferentes
+números de condição, bem como funções não quadráticas, tais como a
+função de Rosenbrock.
+
+Considere diferentes critérios de paragem, por exemplo,
+\[
+tol_{stop}\in\{10^{-3},10^{-5},10^{-7}\}.
+\]
+
+Analise e critique os resultados obtidos. Com base na experiência
+computacional feita, sugira uma modificação para os métodos de
+Barzilai--Borwein que permita melhorar o seu desempenho
+computacional.\\ \ \\
+
+{\bf Procedimento para entrega do trabalho}
+\begin{itemize}
+\item Os algoritmos devem ser codificados em \texttt{Octave}.
+\item Deve ser elaborado um relat\'orio em Latex onde se responda
+\`as quest\~oes ``n\~ao computacionais'' e se apresentem e
+comentem os resultados num\'ericos obtidos. \item Os ficheiros
+relativos aos algoritmos e o pdf gerado pelo Latex devem ser
+colocados numa pasta e a mesma deve ser enviada, depois de
+``zipada'', para o email alcustodio@fct.unl.pt.
+\end{itemize}
+
+
+% ----------------------------------------------------------------------
+%\bibliographystyle{amsplain}
+%\bibliography{}
+\end{document}
+% ----------------------------------------------------------------------
