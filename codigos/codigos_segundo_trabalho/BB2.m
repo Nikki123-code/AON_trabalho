@@ -22,7 +22,10 @@ function [x_final,f_final,n_feval,n_iter] = BB2 (func_f,grad_f,x_ini,tol_stop)
     else %alfa_k, k!=0, usar o método Barzilai-Borwein
       s=x-x_antigo;
       y= g - g_antigo;
-      alfa=(s'*y)/(y'*y);
+      alfa = (s'*y)/(y'*y);
+      if alfa <= 0
+          alfa = 1e-4; % Passo de segurança muito pequenino
+      endif
       x_temp = x + alfa*d;
       f_temp = func_f(x_temp);
       n_feval=n_feval+1;
